@@ -1,0 +1,243 @@
+/**
+  ******************************************************************************
+  * @file    main.c
+  * @author  Ac6
+  * @version V1.0
+  * @date    01-December-2013
+  * @brief   Default main function.
+  ******************************************************************************
+*/
+
+
+#include "stm32f4xx.h"
+#include "stm32f4_discovery.h"
+
+
+
+int main(void)
+{
+	int stage = 0;
+		unsigned int P1 = 0, P2 = 0, P3 = 0, P4 = 0;
+		int win_round = 0, win_game = 0;
+
+	/* GPIOD Periph clock enable */
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	/* Configure PD12, PD13, PD14 and PD15 in output pushpull mode */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13| GPIO_Pin_14| GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2| GPIO_Pin_3| GPIO_Pin_4 | GPIO_Pin_5| GPIO_Pin_6| GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_12| GPIO_Pin_13| GPIO_Pin_14;
+		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+		GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+
+		int press_any_key()
+		{
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1)) return 1;
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2)) return 1;
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3)) return 1;
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4)) return 1;
+			return 0;
+		};
+
+		void ResetDiodes()
+		{
+			GPIO_ResetBits(GPIOD, GPIO_Pin_12);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_14);
+		};
+
+		void SetDiodes()
+		{
+			GPIO_SetBits(GPIOD, GPIO_Pin_12);
+			GPIO_SetBits(GPIOD, GPIO_Pin_13);
+			GPIO_SetBits(GPIOD, GPIO_Pin_15);
+			GPIO_SetBits(GPIOD, GPIO_Pin_14);
+		};
+
+		void ToFast()
+		{
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1))
+						{
+						P1--;
+						stage = 6;
+						}
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2))
+						{
+						P2--;
+						stage = 6;
+						}
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3))
+						{
+						P3--;
+						stage = 6;
+						}
+			if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4))
+						{
+						P4--;
+						stage = 6;
+						}
+
+		};
+
+		void blink(int player,int times)
+		{
+			switch(player)
+			{//switch
+			case 1:
+			{
+				for (int j=0;j<times;j++)
+				{
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_12);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_12);
+				}
+				break;
+			}
+			case 2:
+			{
+				for (int j=0;j<times;j++)
+				{
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_13);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+				}
+				break;
+			}
+			case 3:
+			{
+				for (int j=0;j<times;j++)
+				{
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_14);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_14);
+				}
+				break;
+			}
+			case 4:
+			{
+				for (int j=0;j<times;j++)
+				{
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_15);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+				}
+				break;
+			}
+			case 5:
+			{
+				for (int j=0;j<times;j++)
+				{
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_12);
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_13);
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_14);
+					for (int i = 0;i<1000000;i++)GPIO_SetBits(GPIOD, GPIO_Pin_15);
+					///
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_12);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_14);
+					for (int i = 0;i<1000000;i++)GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+				}
+				break;
+			}
+
+			}//switch
+		};
+
+
+
+
+	for(;;)
+		{
+
+
+
+
+		switch(stage)
+		{
+			case 0:
+			{
+				if(press_any_key())
+				{
+					for (int i=0;i<= 5000000;i++);
+					stage = 1;
+				}
+				break;
+			}
+
+			case 1:
+			{
+				int time = 1;
+				for (int i = 0;i<time*1000000;i++)
+					{
+					SetDiodes();
+					ToFast();
+					if(stage == 6) break;
+					}
+				if (stage == 1) stage = 2;
+				break;
+			}
+			case 2:
+			{
+				ResetDiodes();
+				if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1)) {stage = 3; P1++; win_round = 1;}
+				if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2)) {stage = 3; P2++; win_round = 2;}
+				if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3)) {stage = 3; P3++; win_round = 3;}
+				if(!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4)) {stage = 3; P4++; win_round = 4;}
+				break;
+			}
+			case 3:
+			{
+				if(win_round == 1) blink(1,5);
+				if(win_round == 2) blink(2,5);
+				if(win_round == 3) blink(3,5);
+				if(win_round == 4) blink(4,5);
+				stage = 4;
+				break;
+			}
+			case 4:
+			{
+				win_round = 0;
+				if (P1>= 5 || P2>= 5 ||P3>= 5 ||P4>= 5) stage = 5;
+				else stage = 1;
+				break;
+			}
+			case 5:
+			{
+				if(win_game == 1) {for(;;) blink(1,10);}
+				if(win_game == 2) {for(;;) blink(2,10);}
+				if(win_game == 3) {for(;;) blink(3,10);}
+				if(win_game == 4) {for(;;) blink(4,10);}
+				break;
+			}
+			case 6:
+			{
+				ResetDiodes();
+				 blink(5,1);
+				 stage = 1;
+				 break;
+			}
+		}// switch end
+
+
+
+		}
+
+
+
+}
